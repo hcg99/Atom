@@ -25,7 +25,7 @@ print(f"loaded {len(image_data)} images")
 
 for i in range(1):
 # Plot a good dataset - here index 8 (but there are others too!)
-    plt.imshow(image_data[i])
+    plt.imshow(image_data[8])
     plt.show()
 
 # The histogram of the data will help show possible single photon hits
