@@ -3,7 +3,27 @@ import matplotlib.pyplot as plt
 import h5py
 import itertools
 from scipy.stats import logistic
+import array as arr
 
+# Define variables
+pedestal_mean = 60
+dim = 2048
+sub_data = []
+
+# Pedestal subtraction function
+def pedestal_subtraction(pedestal_mean, data_in):
+    for i in range(20):
+        data_in[i] = data_in[i].astype('float64')
+        data_in[i] -= pedestal_mean
+    return data_in
+
+## Play around with ADU values to get clear picture
+def picture_play(data):
+    for i in range(dim):
+        for j in range(dim):
+            if data[i][j] < 0:
+                data[i][j] = 60000
+    return data
 
 # Name of the hdf file that contain the data we need
 f_name = 'sxro6416-r0504.h5'
@@ -23,12 +43,19 @@ for i in itertools.count(start=0):
 # Tell me how many images were contained in the datafile
 print(f"loaded {len(image_data)} images")
 
-for i in range(1):
+sub_data = pedestal_subtraction(pedestal_mean, image_data)
+
+play_data = picture_play(image_data[8])
+
+for k in range(1):
 # Plot a good dataset - here index 8 (but there are others too!)
-    plt.imshow(image_data[8])
+    plt.imshow(play_data)
     plt.show()
 
 # The histogram of the data will help show possible single photon hits
-    plt.hist(image_data[8].flatten(), bins=100)
-    plt.yscale('log')
-    plt.show()
+    #plt.hist(sub_data[8].flatten(), bins=100)
+    #plt.yscale('log')
+    #plt.show()
+    #plt.hist(image_data2[8].flatten(), bins=100)
+    #plt.yscale('log')
+    #plt.show()

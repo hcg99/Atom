@@ -83,7 +83,6 @@ def function_pos():
                             spread_cnt[2] += 1
                         case 3:
                             spread_cnt[3] += 1
-                            
                     count[0] += 1
     return positions, spillage, count, spread_cnt
 
