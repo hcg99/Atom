@@ -21,9 +21,20 @@ def pedestal_subtraction(pedestal_mean, data_in):
 def picture_play(data):
     for i in range(dim):
         for j in range(dim):
-            if data[i][j] < 0:
+            if data[i][j] < 15:
+                data[i][j] = -60000
+            else:
                 data[i][j] = 60000
     return data
+
+# The histogram of the data will help show possible single photon hits
+def hist(data):
+    plt.hist(sub_data[8].flatten(), bins=100)
+    plt.yscale('log')
+    plt.show()
+    #plt.hist(image_data2[8].flatten(), bins=100)
+    #plt.yscale('log')
+    #plt.show()
 
 # Name of the hdf file that contain the data we need
 f_name = 'sxro6416-r0504.h5'
@@ -47,15 +58,9 @@ sub_data = pedestal_subtraction(pedestal_mean, image_data)
 
 play_data = picture_play(image_data[8])
 
+#hist(image_data[8])
+
 for k in range(1):
 # Plot a good dataset - here index 8 (but there are others too!)
-    plt.imshow(play_data)
+    plt.imshow(sub_data[8])
     plt.show()
-
-# The histogram of the data will help show possible single photon hits
-    #plt.hist(sub_data[8].flatten(), bins=100)
-    #plt.yscale('log')
-    #plt.show()
-    #plt.hist(image_data2[8].flatten(), bins=100)
-    #plt.yscale('log')
-    #plt.show()
