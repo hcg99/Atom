@@ -4,6 +4,7 @@ import h5py
 import itertools
 from scipy.stats import logistic
 import array as arr
+import UI
 
 # Define variables
 pedestal_mean = 60
@@ -11,56 +12,79 @@ dim = 2048
 sub_data = []
 
 # Pedestal subtraction function
-def pedestal_subtraction(pedestal_mean, data_in):
+def pedestal_subtraction(pedestal_mean, data_in_):
+    data_in = data_in_.copy()
     for i in range(20):
         data_in[i] = data_in[i].astype('float64')
         data_in[i] -= pedestal_mean
     return data_in
 
 ## Play around with ADU values to get clear picture
-def picture_play(data):
+def picture_play(data_):
+    data = data_.copy()
     for i in range(dim):
         for j in range(dim):
-            if data[i][j] < 15:
+            ## creates 3x3 islands of high value on pixels with ADU over 50
+            if data[i][j] > 50:
+                for I in range(3):
+                    for J in range(3):
+                        ## break to stop program thinking edges of islands are pixels with ADU over 50
+                        if data[i][j] == 60000:
+                            break
+                        ## accounts for islands not being able to spill out of the 2048^2 frame
+                        elif i+I-1 < 2048 and i+I-1 > -1 and j+J-1 < 2048 and j+J-1 > -1:
+                            data[i+I-1][j+J-1] = 60000
+                        ## keep centre of island at -60000 until end of loop to brevent erroneous breaking
+                        data[i][j] = -60000
+                data[i][j] = 60000
+            ## create 1x1 island of medium value on pixel with 20 < ADU < 50
+            elif data[i][j] > 20:
+                data[i][j] = 30000
+
+    return data
+
+def picture_play2(data_):
+    data = data_.copy()
+    for i in range(dim):
+        for j in range(dim):
+            if data[i][j] < 10:
                 data[i][j] = -60000
             else:
                 data[i][j] = 60000
     return data
 
-# The histogram of the data will help show possible single photon hits
+## The histogram of the data will help show possible single photon hits
+## Accepts only 1 image
 def hist(data):
-    plt.hist(sub_data[8].flatten(), bins=100)
-    plt.yscale('log')
+    plt.hist(data.flatten(), bins=100, log = True)
+    #plt.yscale('log')
     plt.show()
     #plt.hist(image_data2[8].flatten(), bins=100)
     #plt.yscale('log')
     #plt.show()
 
-# Name of the hdf file that contain the data we need
-f_name = 'sxro6416-r0504.h5'
-
-# Open the hdf5 file, use the path to the images to extrate the data and place
-# it in the image data object for further manipulation and inspection.
-datafile = h5py.File(f_name, 'r')
-image_data = []
-for i in itertools.count(start=0):
-    d = datafile.get(f'Configure:0000/Run:0000/CalibCycle:{i:04d}/Princeton::FrameV2/SxrEndstation.0:Princeton.0/data')
-    if d is not None:
-        # actual image is at first index
-        image_data.append(d[0])
+## Plots images; accepts multi-image input
+def plot(data):
+    if len(data) == 2048:
+        plt.imshow(data)
+        plt.title('Hello')
+        plt.show()
     else:
-        break
+        for k in range(len(data)):
+            plt.imshow(data[k])
+            plt.title(k)
+            plt.show()
 
-# Tell me how many images were contained in the datafile
-print(f"loaded {len(image_data)} images")
+
+image_data = UI.function()
 
 sub_data = pedestal_subtraction(pedestal_mean, image_data)
 
-play_data = picture_play(image_data[8])
+spes = 16
+good = [1,2,4,6,7,8,11,14,16,17,19]
+bad = [0,3,5,9,10,12,13,15,18]
 
-#hist(image_data[8])
+play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
 
-for k in range(1):
-# Plot a good dataset - here index 8 (but there are others too!)
-    plt.imshow(sub_data[8])
-    plt.show()
+plot(play_data)
+#hist(play_data[0])
