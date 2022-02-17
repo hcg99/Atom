@@ -25,7 +25,7 @@ def picture_play(data_):
     for i in range(dim):
         for j in range(dim):
             ## creates 3x3 islands of high value on pixels with ADU over 50
-            if data[i][j] > 50:
+            if data[i][j] > 60:
                 for I in range(3):
                     for J in range(3):
                         ## break to stop program thinking edges of islands are pixels with ADU over 50
@@ -75,6 +75,17 @@ def plot(data):
             plt.title(k)
             plt.show()
 
+## summs ADU of multiple images to make spectral lines clearer
+## inputs: list of image arrays; list of indexes of the images selected for the sum
+def sum(data_, index):
+    data_in = data_.copy()
+    data_out = data_in[index[0]].copy()
+    index.pop(0)
+
+    for i in index:
+        data_out += data_in[i]
+
+    return data_out
 
 image_data = UI.function()
 
@@ -84,7 +95,11 @@ spes = 16
 good = [1,2,4,6,7,8,11,14,16,17,19]
 bad = [0,3,5,9,10,12,13,15,18]
 
-play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
+sum_data = sum(sub_data, good)
+print(len(sum_data))
 
+play_data = [picture_play(sum_data), picture_play2(sum_data)]
+
+plot(sum_data)
 plot(play_data)
 #hist(play_data[0])
