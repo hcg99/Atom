@@ -47,7 +47,7 @@ def picture_play2(data_):
     data = data_.copy()
     for i in range(dim):
         for j in range(dim):
-            if data[i][j] < 10:
+            if data[i][j] < 0:
                 data[i][j] = -60000
             else:
                 data[i][j] = 60000
@@ -95,11 +95,12 @@ spes = 16
 good = [1,2,4,6,7,8,11,14,16,17,19]
 bad = [0,3,5,9,10,12,13,15,18]
 
-sum_data = sum(sub_data, good)
-print(len(sum_data))
+#sum_data = sum(sub_data, good)
+#print(len(sum_data))
 
-play_data = [picture_play(sum_data), picture_play2(sum_data)]
+#play_data = [picture_play(sum_data), picture_play2(sum_data)]
+play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
 
-plot(sum_data)
+#plot(sum_data)
 plot(play_data)
-#hist(play_data[0])
+#hist(image_data[spes])
