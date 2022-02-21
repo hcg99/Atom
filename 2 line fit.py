@@ -95,21 +95,23 @@ def find_peaks(data_, len):
     data = data_.copy()
     output = data.copy()*0
     # i runs through the rows
-    for i in range(dim - len + 1):
+    for i in range(0, dim - len + 1, len):
         # max is [maximum peak sum, [peak position]]
         max = [0, [0,0]]
         # j runs across the colums
-        for j in range(dim - len + 1):
+        for j in range(0, dim - len + 1, len):
             sum = 0
             for l in range(len):
                 for l_ in range(len):
                     sum += data[i+l_][j+l]
             if sum > max[0]:
                 max[0] = sum.copy()
-                max[1] = [i + round(len/2), j + round(len/2)]
+                max[1] = [i + round(len/2), j]
 
         #print(max)
-        output[max[1][0],max[1][1]] = 1
+        for l in range(len):
+            for l_ in range(len):
+                output[i+l_][max[1][1]+l] = 1
 
     return output
 
