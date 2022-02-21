@@ -87,28 +87,29 @@ def sum(data_, index):
 
     return data_out
 
-## Takes each row of data and summs all adjacent pixels of an input length
-## Returns the position of the maximum sum
+## Takes a sqaure of data size len x len and sums pixel values. Repeats over all squares in the data
+## Returns the position of square with the maximum sum
 ## Inputs: number of pixels per sum; data
 ## we expect right line to be 1400 < x < 1500 & left line 1250 < x < 1350
 def find_peaks(data_, len):
     data = data_.copy()
     output = data.copy()*0
     # i runs through the rows
-    for i in range(dim):
+    for i in range(dim - len + 1):
         # max is [maximum peak sum, [peak position]]
-        max = [0, 0]
+        max = [0, [0,0]]
         # j runs across the colums
         for j in range(dim - len + 1):
             sum = 0
             for l in range(len):
-                sum += data[i][j+l]
+                for l_ in range(len):
+                    sum += data[i+l_][j+l]
             if sum > max[0]:
                 max[0] = sum.copy()
-                max[1] = j + round(len/2)
+                max[1] = [i + round(len/2), j + round(len/2)]
 
-        print(max)
-        output[i][max[1]] = 1
+        #print(max)
+        output[max[1][0],max[1][1]] = 1
 
     return output
 
@@ -130,5 +131,5 @@ bad = [0,3,5,9,10,12,13,15,18]
 #plot(play_data)
 #hist(play_data[0])
 
-line_data = find_peaks(image_data[spes], 16)
+line_data = find_peaks(image_data[spes], 8)
 plot(line_data)
