@@ -89,29 +89,56 @@ def sum(data_, index):
 
 ## Takes a sqaure of data size len x len and sums pixel values. Repeats over all squares in the data
 ## Returns the position of square with the maximum sum
-## Inputs: number of pixels per sum; data
+## Inputs: number of pixels per sum; data; number of peaks per row
 ## we expect right line to be 1400 < x < 1500 & left line 1250 < x < 1350
-def find_peaks(data_, len):
+def find_peaks(data_, len, num_max):
     data = data_.copy()
     output = data.copy()*0
+
+    ## max is [maximum peak sum, [peak position]]
+    max_val = np.array([])
+    max_pos = np.array([], dtype = 'object')
+    for i in range(num_max):
+        max_val = np.append(max_val, 0.0)
+        max_pos = np.append(max_pos, 0)
+
     # i runs through the rows
     for i in range(0, dim - len + 1, len):
-        # max is [maximum peak sum, [peak position]]
-        max = [0, [0,0]]
-        # j runs across the colums
-        for j in range(0, dim - len + 1, len):
+        max_val *= 0
+        max_pos *= 0
+        #print(max_val, max_pos)
+        ## j runs across the colums
+        for j in range(0, dim - len + 1):
             sum = 0
+            #for l in range(len):
+            for l_ in range(len):
+                sum += data[i+l_][j]
+
+            print(sum, max_val,i)
+
+            for k in range(num_max):
+                if sum > max_val[k]:
+                    print(k, num_max)
+                    if k != num_max - 1:
+                        continue
+                    k = k + 1
+                elif k < 1:
+                    print('break')
+                    break
+                print('value time')
+                max_val = np.delete(max_val, 0)
+                max_val = np.insert(max_val, k-1, sum.copy())
+                print(max_pos)
+                max_pos[k] = [i + round(len/2), j]
+                print(max_pos)
+        #print(max)
+        #print(max_pos[1][1], max_pos[0][1])
+        for k in range(num_max):
             for l in range(len):
                 for l_ in range(len):
-                    sum += data[i+l_][j+l]
-            if sum > max[0]:
-                max[0] = sum.copy()
-                max[1] = [i + round(len/2), j]
-
-        #print(max)
-        for l in range(len):
-            for l_ in range(len):
-                output[i+l_][max[1][1]+l] = 1
+                    ## make highest squares show up on the image
+                    print(max_pos)
+                    output[i+l_][max_pos[k][1]+l] = k + 1
 
     return output
 
@@ -120,7 +147,7 @@ image_data = UI.function()
 
 #sub_data = pedestal_subtraction(pedestal_mean, image_data)
 
-spes = 16
+spes = 8
 good = [1,2,4,6,7,8,11,14,16,17,19]
 bad = [0,3,5,9,10,12,13,15,18]
 
@@ -133,5 +160,5 @@ bad = [0,3,5,9,10,12,13,15,18]
 #plot(play_data)
 #hist(play_data[0])
 
-line_data = find_peaks(image_data[spes], 8)
+line_data = find_peaks(image_data[spes], 16, 2)
 plot(line_data)
