@@ -19,40 +19,6 @@ def pedestal_subtraction(pedestal_mean, data_in_):
         data_in[i] -= pedestal_mean
     return data_in
 
-## Play around with ADU values to get clear picture
-def picture_play(data_):
-    data = data_.copy()
-    for i in range(dim):
-        for j in range(dim):
-            ## creates 3x3 islands of high value on pixels with ADU over 50
-            if data[i][j] > 60:
-                for I in range(3):
-                    for J in range(3):
-                        ## break to stop program thinking edges of islands are pixels with ADU over 50
-                        if data[i][j] == 60000:
-                            break
-                        ## accounts for islands not being able to spill out of the 2048^2 frame
-                        elif i+I-1 < 2048 and i+I-1 > -1 and j+J-1 < 2048 and j+J-1 > -1:
-                            data[i+I-1][j+J-1] = 60000
-                        ## keep centre of island at -60000 until end of loop to brevent erroneous breaking
-                        data[i][j] = -60000
-                data[i][j] = 60000
-            ## create 1x1 island of medium value on pixel with 20 < ADU < 50
-            elif data[i][j] > 20:
-                data[i][j] = 30000
-
-    return data
-
-def picture_play2(data_):
-    data = data_.copy()
-    for i in range(dim):
-        for j in range(dim):
-            if data[i][j] < 0:
-                data[i][j] = -60000
-            else:
-                data[i][j] = 60000
-    return data
-
 ## The histogram of the data will help show possible single photon hits
 ## Accepts only 1 image
 def hist(data):
@@ -63,11 +29,11 @@ def hist(data):
     #plt.yscale('log')
     #plt.show()
 
-## Plots images; accepts multi-image input
-def plot(data):
+## Plots images; accepts multi-image input;
+def plot(data, title):
     if len(data) == 2048:
         plt.imshow(data)
-        plt.title('Hello')
+        plt.title(title)
         plt.show()
     else:
         for k in range(len(data)):
@@ -75,69 +41,53 @@ def plot(data):
             plt.title(k)
             plt.show()
 
-## summs ADU of multiple images to make spectral lines clearer
-## inputs: list of image arrays; list of indexes of the images selected for the sum
-def sum(data_, index):
-    data_in = data_.copy()
-    data_out = data_in[index[0]].copy()
-    index.pop(0)
-
-    for i in index:
-        data_out += data_in[i]
-
-    return data_out
-
 ## Takes a sqaure of data size len x len and sums pixel values. Repeats over all squares in the data
 ## Returns the position of square with the maximum sum
-## Inputs: number of pixels per sum; data; number of peaks per row
+## Inputs: data; number of pixels per sum; number of peaks per row; x_min; x_max; bool sum continuously or discretely
 ## we expect right line to be 1400 < x < 1500 & left line 1250 < x < 1350
-def find_peaks(data_, len, num_max):
+def find_peaks(data_, len, num_max, x_min, x_max, cont):
     data = data_.copy()
     output = data.copy()*0
+    step = 1
 
-    ## max is [maximum peak sum, [peak position]]
-    max_val = np.array([])
-    max_pos = np.array([], dtype = 'object')
-    for i in range(num_max):
-        max_val = np.append(max_val, 0.0)
-        max_pos = np.append(max_pos, 0)
-
-    # i runs through the rows
+    ## i runs through the rows
     for i in range(0, dim - len + 1, len):
-        max_val *= 0
-        max_pos *= 0
+        ## max is [maximum peak sum, [peak position]]
+        max_val = [0.0]*num_max
+        max_pos = [0]*num_max
         #print(max_val, max_pos)
+        if cont == False:
+            step = len
         ## j runs across the colums
-        for j in range(0, dim - len + 1):
+        for j in range(len + x_min, x_max - len + 1, step):
             sum = 0
-            #for l in range(len):
-            for l_ in range(len):
-                sum += data[i+l_][j]
-
-            print(sum, max_val,i)
+            for l in range(len):
+                for l_ in range(len):
+                    sum += data[i+l_][j+l]
 
             for k in range(num_max):
                 if sum > max_val[k]:
-                    print(k, num_max)
                     if k != num_max - 1:
                         continue
                     k = k + 1
                 elif k < 1:
-                    print('break')
                     break
-                print('value time')
-                max_val = np.delete(max_val, 0)
-                max_val = np.insert(max_val, k-1, sum.copy())
-                print(max_pos)
-                max_pos[k] = [i + round(len/2), j]
-                print(max_pos)
+                #max_val = np.delete(max_val, 0)
+                max_val.pop(0)
+                max_pos.pop(0)
+                #max_val = np.insert(max_val, k-1, sum.copy())
+                max_val.insert(k-1, sum.copy())
+                max_pos.insert(k-1, [i + round(len/2), j])
+                break
         #print(max)
         #print(max_pos[1][1], max_pos[0][1])
         for k in range(num_max):
             for l in range(len):
                 for l_ in range(len):
                     ## make highest squares show up on the image
-                    print(max_pos)
+                    #print(l_)
+                    #print(output[i+l_][max_pos[k][1]+l], max_pos[k][1])
+                    #print(l_)
                     output[i+l_][max_pos[k][1]+l] = k + 1
 
     return output
@@ -145,20 +95,9 @@ def find_peaks(data_, len, num_max):
 
 image_data = UI.function()
 
-#sub_data = pedestal_subtraction(pedestal_mean, image_data)
-
 spes = 8
 good = [1,2,4,6,7,8,11,14,16,17,19]
 bad = [0,3,5,9,10,12,13,15,18]
 
-#sum_data = sum(sub_data, good)
-#print(len(sum_data))
-
-#play_data = [picture_play(sum_data), picture_play2(sum_data)]
-
-#plot(sum_data)
-#plot(play_data)
-#hist(play_data[0])
-
-line_data = find_peaks(image_data[spes], 16, 2)
-plot(line_data)
+line_data = find_peaks(image_data[spes], 16, 4, 0, 2048, False)
+plot(line_data, 'cont. full square sum')
