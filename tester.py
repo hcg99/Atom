@@ -95,11 +95,11 @@ spes = 16
 good = [1,2,4,6,7,8,11,14,16,17,19]
 bad = [0,3,5,9,10,12,13,15,18]
 
-#sum_data = sum(sub_data, good)
+sum_data = sum(sub_data, good)
 #print(len(sum_data))
 
-#play_data = [picture_play(sum_data), picture_play2(sum_data)]
-play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
+play_data = [picture_play(sum_data), picture_play2(sum_data)]
+#play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
 
 #plot(sum_data)
 plot(play_data)
