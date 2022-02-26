@@ -21,7 +21,7 @@ def function():
             image_data.append(d[0])
         else:
             break
-            
+
     # Tell me how many images were contained in the datafile
     print(f"loaded {len(image_data)} images")
 
