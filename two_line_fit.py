@@ -7,11 +7,15 @@ dim = 2048
 ## Takes a sqaure of data size len x len and sums pixel values. Repeats over all squares in the data
 ## Returns the position of squares with the maximum sum
 ## Inputs: data; number of pixels per sum; number of peaks per row; x_min; x_max; bool sum continuously or discretely
-## Output: array same size as the input data; mostly zeros but higher values at the highest sum squares
-## we expect right line to be 1400 < x < 1530 & left line 1250 < x < 1350
+## Outputs: output; array same size as the input data, mostly zeros but higher values at the highest sum squares
+##          out_posX; list of 1D lists containing row position (y value) of each of the highest squares (positions are evenly spaced)
+##          out_posY; list of 1D lists containing column position (x value) of each of the highest squares
+## we expect right line to be 1400 < x < 1530 & left line 1250 < x < 1380
 def find_peaks(data_, len, num_max, x_min, x_max, cont, square):
     data = data_.copy()
     output = data.copy()*0
+    out_posX = [[]]*num_max
+    out_posY = [[]]*num_max
 
     ## step determines continuous or discrete summing
     step = 1
@@ -55,6 +59,9 @@ def find_peaks(data_, len, num_max, x_min, x_max, cont, square):
 
         ## makes squares of non-zero value in our output at locations of highest sum
         for k in range(num_max):
+            ## creates array of positions of points
+            out_posX[k].append(max_pos[k][0])
+            out_posY[k].append(max_pos[k][1] + round(len/2))
             for l in range(len):
                 ## draw lines at x_min & x_max
                 output[i+l][x_min] = num_max
@@ -63,4 +70,4 @@ def find_peaks(data_, len, num_max, x_min, x_max, cont, square):
                     # in each row, value of the highest square is not uniform
                     output[i+l][max_pos[k][1]+l_] = k + 1
 
-    return output
+    return output, out_posX, out_posY
