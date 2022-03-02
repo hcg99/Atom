@@ -34,7 +34,7 @@ def picture_play(data_):
                         ## accounts for islands not being able to spill out of the 2048^2 frame
                         elif i+I-1 < 2048 and i+I-1 > -1 and j+J-1 < 2048 and j+J-1 > -1:
                             data[i+I-1][j+J-1] = 60000
-                        ## keep centre of island at -60000 until end of loop to brevent erroneous breaking
+                        ## keep centre of island at -60000 until end of loop to brevent brevoneous breaking
                         data[i][j] = -60000
                 data[i][j] = 60000
             ## create 1x1 island of medium value on pixel with 20 < ADU < 50
@@ -87,20 +87,23 @@ def sum(data_, index):
 
     return data_out
 
-image_data = UI.function()
+def self_function():
+    image_data = UI.function()
 
-sub_data = pedestal_subtraction(pedestal_mean, image_data)
+    sub_data = pedestal_subtraction(pedestal_mean, image_data)
 
-spes = 16
-good = [1,2,4,6,7,8,11,14,16,17,19]
-bad = [0,3,5,9,10,12,13,15,18]
+    spes = 16
+    good = [1,2,4,6,7,8,11,14,16,17,19]
+    bad = [0,3,5,9,10,12,13,15,18]
 
-sum_data = sum(sub_data, good)
-#print(len(sum_data))
+    sum_data = sum(sub_data, good)
+    #print(len(sum_data))
 
-play_data = [picture_play(sum_data), picture_play2(sum_data)]
-#play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
+    play_data = [picture_play(sum_data), picture_play2(sum_data)]
+    #play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
 
-#plot(sum_data)
-plot(play_data)
-#hist(image_data[spes])
+    #plot(sum_data)
+    plot(play_data)
+    #hist(image_data[spes])
+
+#self_function()
