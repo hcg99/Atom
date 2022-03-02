@@ -62,12 +62,24 @@ def hist(data, bins=100):
     #plt.show()
 
 ## Plots images; accepts multi-image input
-def plot(data, title = 'Hello'):
-    if data[0][0] != np.array:
+def plot(data, title = 'Hello', *args):
+    #print(type(data))
+    if type(data[0]) != np.ndarray and type(data[0]) != list:
+        #print('1')
+        if len(args) == 0:
+            plt.plot(data)
+        else:
+            plt.plot(args[0], data)
+        #plt.yscale('log')
+        plt.title(title)
+        plt.show()
+    elif type(data[0][0]) != np.ndarray and type(data[0][0]) != list:
+        #print('2')
         plt.imshow(data)
         plt.title(title)
         plt.show()
     else:
+        #print('3')
         for k in range(len(data)):
             plt.imshow(data[k])
             plt.title(k)
@@ -78,7 +90,7 @@ def plot(data, title = 'Hello'):
 def sum(data_, *index):
     if len(index) == 0:
         index = list(range(len(data_)))
-        print('no index argument')
+        print('Data Sum: no index argument so all data will be summed')
     else:
         index = list(index)[0]
 
