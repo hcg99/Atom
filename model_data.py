@@ -11,6 +11,8 @@ def blank_array(dim):
     arr = [arr]*dim
     return arr
 
+## creates dim^2 array of random gaussian noise
+## plot and histograms
 def pedestal(data):
     norm = np.random.normal(loc=59, scale=8, size=(dim, dim))
     norm[0][0] = 350
@@ -21,6 +23,7 @@ def pedestal(data):
 
 pedestal(data)
 
+## investigate the pedestal of all 20 images; min adu val, position of pedestal maximum
 def ped_peak(data):
     good = []
     bad = []
@@ -52,7 +55,7 @@ def ped_peak(data):
     return good, bad
 
 
-#print(ped_peak(data))
+print(ped_peak(data))
 
 #[x,y] = plt.hist(data[1].flatten(), bins=100, log = True)[:2]
 #plt.yscale('log')
