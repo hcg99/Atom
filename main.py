@@ -14,7 +14,7 @@ def pedestal_subtraction(pedestal_mean, data_in_):
     data_in = data_in_.copy()
     for i in range(20):
         data_in[i] = data_in[i].astype('float64')
-        data_in[i] -= pedestal_mean
+        data_in[i] -= pedestal_mean[i]
     return data_in
 
 ## Play around with ADU values to get clear picture
@@ -62,14 +62,27 @@ def hist(data, bins=100):
     #plt.show()
 
 ## Plots images; accepts multi-image input
-def plot(data, title = 'Hello', *args):
+def plot1D(data, x = [], title = 'Hello', xlabel='x', ylabel='y', style='b-' ):
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if len(x) == 0:
+        plt.plot(data)
+    else:
+        plt.plot(x, data, style)
+    #plt.yscale('log')
+    plt.title(title)
+    plt.show()
+
+def plot2D(data, title = 'Hello', xlabel='x', ylabel='y', style='b-' ):
     #print(type(data))
     if type(data[0]) != np.ndarray and type(data[0]) != list:
         #print('1')
-        if len(args) == 0:
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        if len(x) == 0:
             plt.plot(data)
         else:
-            plt.plot(args[0], data)
+            plt.plot(x, data, style)
         #plt.yscale('log')
         plt.title(title)
         plt.show()
@@ -102,6 +115,18 @@ def sum(data_, *index):
         data_out += data_in[i]
 
     return data_out
+
+##Input: 1 set of data
+##Output: Modal ADU value
+def ped_peak(data):
+    peakPos = []
+    for i in range(len(data)):
+        [binVal, binEdg] = plt.hist(data[i].flatten(), bins=100, log=True)[:2]
+        binVal = list(binVal)
+        index = binVal.index((max(binVal)))
+        peakPos.append((binEdg[index] + binEdg[index + 1])/2)
+    return peakPos
+
 
 #image_data = UI.function()
 
