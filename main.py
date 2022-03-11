@@ -53,9 +53,10 @@ def picture_play2(data_):
 
 ## The histogram of the data will help show possible single photon hits
 ## Accepts only 1 image
-def hist(data, bins=100):
+def hist(data, bins=100, title=''):
     plt.hist(data.flatten(), bins=bins, log = True)
     #plt.yscale('log')
+    plt.title(title)
     plt.show()
     #plt.hist(image_data2[8].flatten(), bins=100)
     #plt.yscale('log')
