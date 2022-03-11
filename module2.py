@@ -7,9 +7,19 @@ import least_squares_fit
 
 import matplotlib.pyplot as plt
 
+import module3
+
 image_data = UI.function()
 
+#aligned_data = main.pedestal_subtraction( main.ped_peak(image_data), image_data )
+#print(type(aligned_data))
 sum_data = main.sum(image_data)
+
+print(type(sum_data))
+print(np.amin(sum_data))
+
+#main.hist(sum_data)
+#main.hist(main.sum(aligned_data))
 
 line_data = []
 ## two_line_fit.find_peaks()
@@ -26,8 +36,14 @@ ydata1 = np.array(line_data[0][2][0])
 ydata2 = np.array(line_data[1][2][0])
 data = line1 + line2
 
+print('sal;kfh;ldshf;lashf', len(xdata2))
+print('sal;kfh;ldshf;lashf', len(ydata2))
+plt.plot(xdata2, ydata2)
+plt.show()
+
+
 #fitdata1 = least_squares_fit.fit(xdata1, ydata1)
-fitdata2 = least_squares_fit.fit(xdata2, ydata2)
+fitdata2 = least_squares_fit.fit(xdata2, ydata2, [1,1,1,1,1,-0.05])
 
 ## add the fitted line on top of our squares data
 lin = np.zeros((main.dim, main.dim))
@@ -39,6 +55,7 @@ enhanced_image = np.array( main.picture_play( main.sum(main.pedestal_subtraction
 print(len(enhanced_image))
 print(len(enhanced_image[0]))
 
+plt.yscale('linear')
 plt.imshow(enhanced_image)
 plt.show()
 
@@ -48,8 +65,9 @@ print(enhanced_image)
 main.plot2D(enhanced_image, 'enhanced sum data')
 
 for i in range(main.dim):
-    enhanced_image[i][round(fitdata2[i])] = -1000
-
+    #enhanced_image[i][round(fitdata2[i])] = -1000
+    enhanced_image[i][round(module3.yfitted[i])] = -1000
+    enhanced_image[i][round(module3.yfitted2[i])] = -1000
 
 print(enhanced_image)
 
