@@ -60,8 +60,8 @@ def find_peaks(data_, len, num_max, x_min, x_max, cont, square):
         ## makes squares of non-zero value in our output at locations of highest sum
         for k in range(num_max):
             ## creates array of positions of points
-            out_posX[k].append(max_pos[k][0])
-            out_posY[k].append(max_pos[k][1] + round(len/2))
+            out_posX[k] = np.append(out_posX[k], max_pos[k][0])
+            out_posY[k] = np.append(out_posY[k], max_pos[k][1] + round(len_/2))
             for l in range(len):
                 ## draw lines at x_min & x_max
                 output[i+l][x_min] = num_max
