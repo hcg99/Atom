@@ -3,25 +3,10 @@ import matplotlib.pyplot as plt
 import h5py
 import itertools
 from scipy.stats import logistic
+import UI
 
 
-# Name of the hdf file that contain the data we need
-f_name = 'sxro6416-r0504.h5'
-
-# Open the hdf5 file, use the path to the images to extrate the data and place
-# it in the image data object for further manipulation and inspection.
-datafile = h5py.File(f_name, 'r')
-image_data = []
-for i in itertools.count(start=0):
-    d = datafile.get(f'Configure:0000/Run:0000/CalibCycle:{i:04d}/Princeton::FrameV2/SxrEndstation.0:Princeton.0/data')
-    if d is not None:
-        # actual image is at first index
-        image_data.append(d[0])
-    else:
-        break
-
-# Tell me how many images were contained in the datafile
-print(f"loaded {len(image_data)} images")
+image_data = UI.function()
 
 
 # Plot a good dataset - here index 8 (but there are others too!)
@@ -86,10 +71,7 @@ def function_pos():
                     count[0] += 1
     return positions, spillage, count, spread_cnt
 
-pos = function_pos()[0]
-spillage = function_pos()[1]
-count = function_pos()[2]
-spread_cnt = function_pos()[3]
+pos, spillage, count, spread_cnt = function_pos()
 print(count)
 #print(spillage)
 print(spillage - count[0])
