@@ -53,6 +53,30 @@ def picture_play2(data_):
                 data[i][j] = 60000
     return data
 
+## Play around with ADU values to get thresholds
+def picture_play(data_):
+    data = data_.copy()
+    for i in range(dim):
+        for j in range(dim):
+            ## creates 3x3 islands of high value on pixels with ADU over 50
+            if data[i][j] > 60:
+                for I in range(3):
+                    for J in range(3):
+                        ## break to stop program thinking edges of islands are pixels with ADU over 50
+                        if data[i][j] == 60000:
+                            break
+                        ## accounts for islands not being able to spill out of the 2048^2 frame
+                        elif i+I-1 < 2048 and i+I-1 > -1 and j+J-1 < 2048 and j+J-1 > -1:
+                            data[i+I-1][j+J-1] = 60000
+                        ## keep centre of island at -60000 until end of loop to brevent brevoneous breaking
+                        data[i][j] = -60000
+                data[i][j] = 60000
+            ## create 1x1 island of medium value on pixel with 20 < ADU < 50
+            elif data[i][j] > 20:
+                data[i][j] = 30000
+
+    return data
+
 ## The histogram of the data will help show possible single photon hits
 ## Accepts only 1 image
 def hist(data):
