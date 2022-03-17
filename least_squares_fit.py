@@ -48,12 +48,15 @@ def simpfit(xdata, ydata, p0=[1000, 0, 10**5, 0, 0, 0], paramreturn=False):
 ## Input paramaters used in con_sec2
 ## Output coeffs: y^2 + Ax^2 + By + Cx + Dxy + E = 0
 def param_convert(a, b, c, d, e, f=0):
+    ## x & y have units of CCD pixel width (13.5 um)
+    ## so we convert into metres here
+    pixel = 13.5 * 10**-6
     A = f**2 - (b**2)*d
     B = -2*a
     C = 2*a*f - (b**2)*e
     D = -2*f
     E = a**2 - (b**2)*c
-    return A, B, C, D, E
+    return A, B*pixel, C*pixel, D, E*pixel**2
 
 def self_function():
     image_data = UI.function()
