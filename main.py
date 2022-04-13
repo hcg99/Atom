@@ -120,12 +120,24 @@ def sum(data_, *index):
 ##Input: 1 set of data
 ##Output: Modal ADU value
 def ped_peak(data):
+    if len(data) == dim:
+        [binVal, binEdg] = plt.hist(data.flatten(), bins=100, log=True)[:2]
+        #plt.show()
+        binVal = list(binVal)
+        index = binVal.index((max(binVal)))
+        peakPos = (binEdg[index] + binEdg[index + 1])/2
+        plt.close()
+        return peakPos
+
+    ## for many input images:
     peakPos = []
-    for i in range(len(data)):
+    iter = range(len(data))
+    for i in iter:
         [binVal, binEdg] = plt.hist(data[i].flatten(), bins=100, log=True)[:2]
         binVal = list(binVal)
         index = binVal.index((max(binVal)))
         peakPos.append((binEdg[index] + binEdg[index + 1])/2)
+        plt.close()
     return peakPos
 
 
