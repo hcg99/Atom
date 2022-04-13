@@ -46,3 +46,21 @@ two_line_fit.py
 
 UI.py
     extracts image data from the data file
+
+Energy_assign.py
+    creates energy matrix
+
+getFits.py
+    calls l_s_f & t_l_f to output arrays of 2048 y values for the 2 spectral peaks and mean distance between peaks
+
+genericFilter.py
+    photon counting
+
+  
+pickle:
+  data
+    sum of all non-dark data sets
+  Emat
+    matrix of energy for its corresponding pixel
+  phoE
+    list of photon energies
