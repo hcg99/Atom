@@ -27,21 +27,24 @@ def lineout():
             title = 'bad'
         main.plot(y, title, x)
 
-def brem(A, B, T, n):
-    ## x = range of wavelengths
+## Inputs: temperature; density of charge carriers; physical constants A & B
+## Outputs: 2048 evenly spaced wavelengths & energies; bremsstrahlung intensity
+def brem(T, n, A=A, B=B):
+    ## wave_lengths = range of wavelengths
     wave_lengths = np.linspace(0.77*con.nano, 1.13*con.nano, 2048)
+    ## E = range of energies
     E = con.h*con.c/(con.e*wave_lengths)
 
+    ## bremsstrahlung intensity
     y = A*(n**2)*np.exp(-B/(wave_lengths*T))/((T**0.5)*wave_lengths**2)
-
-    #print(y)
-    #main.plot(y, E, 'Bremsstrahlung', 'Energy (eV)', 'Intensity (a.u.)')
 
     return wave_lengths, E, y
 
+## normal distribution
 def norm(x, mu, sigma):
     return np.exp(-0.5*((x-mu)/sigma)**2)/(2*np.pi*sigma)
 
+## creates L series normal peaks
 def lseries(x, sigma, E1, E2):
 
     La1 = norm(x, E1, sigma)
@@ -51,7 +54,7 @@ def lseries(x, sigma, E1, E2):
 
 ## code to call functions to create bremsstrahlung with spectral peaks
 def total(T=T, n=n):
-    wave_lengths, E, brem1 = brem(A, B, T, n)
+    wave_lengths, E, brem1 = brem(T, n, A, B)
     La1, La2 = lseries(E, peak_sigma, E1, E2)
 
     return E, brem1 + 2*La1 + 2*La2
