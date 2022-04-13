@@ -88,10 +88,10 @@ def hist(data):
     #plt.show()
 
 ## Plots images; accepts multi-image input
-def plot(data):
-    if len(data) == 2048:
+def plot(data, title='hello'):
+    if type(data) == np.ndarray:
         plt.imshow(data)
-        plt.title('Hello')
+        plt.title(title)
         plt.show()
     else:
         for k in range(len(data)):
@@ -111,6 +111,9 @@ def sum(data_, index):
 
     return data_out
 
+def section_select(data, xmin, xmax, ymin, ymax):
+    plot(data[ymin:ymax, xmin:xmax], 'data section')
+
 def self_function():
     image_data = UI.function()
 
@@ -121,7 +124,11 @@ def self_function():
     bad = [0,3,5,9,10,12,13,15,18]
 
     sum_data = sum(sub_data, good)
-    #print(len(sum_data))
+
+    section_select(image_data[spes], 1754, 1761, 1392, 1399)
+    plot(sum_data)
+    hist(image_data[11])
+    hist(sum_data)
 
     play_data = [picture_play(sum_data), picture_play2(sum_data)]
     #play_data = [picture_play(sub_data[spes]), picture_play2(sub_data[spes])]
@@ -130,4 +137,4 @@ def self_function():
     plot(play_data)
     #hist(image_data[spes])
 
-#self_function()
+self_function()
