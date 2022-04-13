@@ -5,7 +5,7 @@ import UI
 import main
 import two_line_fit
 
-
+#Inputs: function, x data, y data, coeffs
 def residuals(f, xdat, ydat, popt):
     res = 0
     for i in range(len(xdat)):
@@ -18,32 +18,48 @@ def con_sec(x, a, b, c, d, e):
 def con_sec2(x, a, b, c, d, e, f):
     return a + b*((c + d*(x**2) + e*x)**0.5) + f*x
 
+def con_sec3(x, a, c, d, e, f):
+    return a + ((c + d*(x**2) + e*x)**0.5) + f*x
+
 ## Inputs: xdata (must be np.array), ydata
 ## Output: ydata fitted to full dim x
 ## Option to return parameters. coeffs will be returned in "param_convert" form
 def fit(xdata, ydata, p0=[1000, 0, 10**5, 0, 0, 0], paramreturn=False):
     popt, pcov = curve_fit(con_sec2, xdata, ydata, p0=p0)
     print(popt)
-#print('hello', type(popt))
+
     popt2, pcov2 = curve_fit(con_sec2, xdata, ydata, p0=popt)
-    print(popt2)
-    #popt3, pcov3 = curve_fit(con_sec2, xdata, ydata, p0=np.append(popt2, -0.05))
-#print(popt3, '\n', '\n')
+    print(popt2, '\n\n')
+
     if paramreturn == True:
-        return con_sec2(np.arange(main.dim), *popt2), param_convert(*popt2)
+        return con_sec2(np.arange(main.dim), *popt2), popt2
     return con_sec2(np.arange(main.dim), *popt2)
 
 def simpfit(xdata, ydata, p0=[1000, 0, 10**5, 0, 0, 0], paramreturn=False):
     popt, pcov = curve_fit(con_sec, xdata, ydata, p0=p0[:5])
     print(popt)
-#print('hello', type(popt))
+
     popt2, pcov2 = curve_fit(con_sec, xdata, ydata, p0=popt)
     print(popt2)
+
     popt3, pcov3 = curve_fit(con_sec2, xdata, ydata, p0=np.append(popt2, -0.05))
-    print(popt3, '\n', '\n')
+    print(popt3, '\n\n')
+
     if paramreturn == True:
-        return con_sec2(np.arange(main.dim), *popt3), param_convert(*popt2)
+        return con_sec2(np.arange(main.dim), *popt3), popt3
     return con_sec2(np.arange(main.dim), *popt3)
+
+def redfit(xdata, ydata, p0=[1000, 10**12, 0, 0, 0], paramreturn=False):
+    popt, pcov = curve_fit(con_sec3, xdata, ydata, p0=p0)
+    print(popt)
+
+    popt2, pcov2 = curve_fit(con_sec3, xdata, ydata, p0=popt)
+    print(popt2, '\n\n')
+
+    if paramreturn == True:
+    ##                                                          insert(array, pos, value)
+        return con_sec3(np.arange(main.dim), *popt2), popt2#param_convert(*np.insert(popt2, 1, 1))
+    return con_sec3(np.arange(main.dim), *popt2)
 
 ## Input paramaters used in con_sec2
 ## Output coeffs: y^2 + Ax^2 + By + Cx + Dxy + E = 0
