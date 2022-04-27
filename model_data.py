@@ -17,7 +17,7 @@ def pedestal(data):
     norm = np.random.normal(loc=59, scale=8, size=(dim, dim))
     norm[0][0] = 350
     print(type(norm))
-    main.plot(norm)
+    main.plot2D(norm)
     main.hist(data[10])
     main.hist(norm)
 

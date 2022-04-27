@@ -4,6 +4,7 @@ import numpy as np
 import two_line_fit
 import matplotlib.pyplot as plt
 import least_squares_fit
+import optimizeAlpha
 
 ## LOOP TO REMOVE ASKEW CURVE MODEL POINTS that deviate more than 'deviate'
 def point_select(x, y):
@@ -32,22 +33,41 @@ def fit_data(data):
     yfitted, params = least_squares_fit.simpfit(X, Y, [1000, 0, 10**5, 0, 0, 0], paramreturn=True)
     yfitted2, params2 = least_squares_fit.simpfit(X2, Y2, [1000, 1, 10**5, 0.1, -100, 0], paramreturn=True)
 
+    def angle(params):
+        return 0.5*math.atan(params[3]/(params[0]-1))
+
+    import math
+    print('\n')
+    print('Range of angles (degrees) between the axes of the CCD and the direction of energy propagation:')
+    #print(angle(least_squares_fit.param_convert(*params)))
+    print(angle(least_squares_fit.param_convert(*params))*180/math.pi)
+    #print(angle(least_squares_fit.param_convert(*params2)))
+    print(angle(least_squares_fit.param_convert(*params2))*180/math.pi, '\n')
+
     # Plots
-    plt.plot(x2[0], y2[0], 'x', label='2- all')
-    plt.plot(X2, Y2, 'x', label='2 - removed')
-    plt.plot(np.arange(2048), yfitted2, label='2 - fit')
-    plt.plot(x[0], y[0], 'x', label='1 - all')
-    plt.plot(X, Y, 'x', label='1 - removed')
-    plt.plot(np.arange(2048), yfitted, label='1 - fit')
+    plt.plot(x[0], y[0], 'x', label='1218.5 eV anomalies')
+    plt.plot(X, Y, 'x', label='local sum maxima')
+    plt.plot(np.arange(2048), yfitted, label='curve fit')
+    plt.plot(x2[0], y2[0], 'x', label='1188.0 eV anomalies')
+    plt.plot(X2, Y2, 'x', label='local sum maxima')
+    plt.plot(np.arange(2048), yfitted2, label='curve fit')
+    plt.title('Emission line locations with curve fitting')
+    plt.xlabel('x_ (pixels)')
+    plt.ylabel('y_ (pixels)')
     plt.legend()
     plt.show()
 
     # Avereage line separation
     dif = yfitted2 - yfitted
     mean = sum(dif)/len(dif)
-    print(min(dif), '\n',max(dif), '\n')
+    print('Distance (pixels) between emission lines:')
+    print(min(dif))
+    print(max(dif), '\n')
     print('mean: ', mean )
     print('mid-range: ', (max(dif) + min(dif))/2 )
     print('partial mean: ', sum(dif[500:len(dif)])/len(dif[500:len(dif)]), '\n')
 
-    return yfitted, yfitted2, mean
+    # Obtain aptimized value for alpha
+    alpha = optimizeAlpha.getAlpha(yfitted, yfitted2, mean, X, X2)
+
+    return yfitted, yfitted2, mean, alpha

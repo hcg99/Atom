@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import h5py
 import itertools
 from scipy.stats import logistic
+import math
 
 # Define variables
 pedestal_mean = 60
@@ -18,12 +19,12 @@ def pedestal_subtraction(pedestal_mean, data_in_):
     return data_in
 
 ## Play around with ADU values to get clear picture
-def picture_play(data_):
+def picture_play(data_, mu):
     data = data_.copy()
     for i in range(dim):
         for j in range(dim):
             ## creates 3x3 islands of high value on pixels with ADU over 50
-            if data[i][j] > 60:
+            if data[i][j] > 60 + mu:
                 for I in range(3):
                     for J in range(3):
                         ## break to stop program thinking edges of islands are pixels with ADU over 50
@@ -36,16 +37,16 @@ def picture_play(data_):
                         data[i][j] = -60000
                 data[i][j] = 60000
             ## create 1x1 island of medium value on pixel with 20 < ADU < 50
-            elif data[i][j] > 20:
+            elif data[i][j] > 20 + mu:
                 data[i][j] = 30000
 
     return data
 
-def picture_play2(data_):
+def picture_play2(data_, mu):
     data = data_.copy()
     for i in range(dim):
         for j in range(dim):
-            if data[i][j] < 0:
+            if data[i][j] < mu:
                 data[i][j] = -60000
             else:
                 data[i][j] = 60000
@@ -140,6 +141,25 @@ def ped_peak(data):
         plt.close()
     return peakPos
 
+# takes single image input and returns pedestal mean and standard deviation
+# method for getting mean gives better result than ped_peak
+# sigma retrieved from FWHM method
+def ped_properties(data):
+    [binVal, binEdg] = plt.hist(data.flatten(), bins=100, range=(0,100), log=False)[:2]
+    plt.close()
+    k = 0
+    while max(binVal)/2 > binVal[k]:
+        k += 1
+    x1 = binEdg[k]
+    k = -1
+    while max(binVal)/2 > binVal[k]:
+        k -= 1
+    x2 = binEdg[k]
+    FWHM = x2 - x1
+    sigma = round(FWHM/(8*math.log(2))**0.5, 1)
+    mu_ = np.array([i for i in data.flatten() if i < 95])
+    mu = math.trunc(mu_.sum()/len(mu_))
+    return mu, sigma
 
 #image_data = UI.function()
 

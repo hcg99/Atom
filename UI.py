@@ -6,7 +6,7 @@ from scipy.stats import logistic
 import array as arr
 
 ## Takes an hdf data file; returns all the images in the file; prints the number of images
-## If called with an integer index, single image at given index is returned  
+## If called with an integer index, single image at given index is returned
 def function(index = []):
     # Name of the hdf file that contain the data we need
     f_name = 'sxro6416-r0504.h5'
@@ -29,6 +29,6 @@ def function(index = []):
             break
 
     # Tell me how many images were contained in the datafile
-    print(f"loaded {len(image_data)} images")
+    print(f"loaded {len(image_data)} images", '\n')
 
     return image_data

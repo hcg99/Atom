@@ -37,13 +37,13 @@ def fit(xdata, ydata, p0=[1000, 0, 10**5, 0, 0, 0], paramreturn=False):
 
 def simpfit(xdata, ydata, p0=[1000, 0, 10**5, 0, 0, 0], paramreturn=False):
     popt, pcov = curve_fit(con_sec, xdata, ydata, p0=p0[:5])
-    print(popt)
+    #print(popt)
 
     popt2, pcov2 = curve_fit(con_sec, xdata, ydata, p0=popt)
-    print(popt2)
+    #print(popt2)
 
     popt3, pcov3 = curve_fit(con_sec2, xdata, ydata, p0=np.append(popt2, -0.05))
-    print(popt3, '\n\n')
+    #print(popt3, '\n\n')
 
     if paramreturn == True:
         return con_sec2(np.arange(main.dim), *popt3), popt3
