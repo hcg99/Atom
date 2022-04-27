@@ -8,14 +8,14 @@ import math
 import scipy.constants as con
 import pickle
 
-data = main.sum( UI.function(), main.good )
-with open('pickledata.pk', 'wb') as fi:
-    pickle.dump(data, fi)
+#with open('pickledata.pk', 'rb') as fi:
+#    data = pickle.load(fi)
 ## ylo & yup are in units of pixels
-ylo, yup, dy = getFits.fit_data(data)
+#ylo, yup, dy, alpha = getFits.fit_data(data)
+
 
 ## Returns 2048^2 array of each pixels energy value
-def getEnergyMatrix(P, a, ylo, yup):
+def getEnergyMatrix(a, ylo, yup, dy):
     E1 = 1188
     E2 = 1218.5
     d = (15.954*10**-10)/2
@@ -34,9 +34,14 @@ def getEnergyMatrix(P, a, ylo, yup):
     def sinAng2Ene(sinAng):
         return (con.h*con.c)/(2*d*con.e*sinAng)
 
+    ## Input alpha, Output P
+    def getP(a, dy):
+        return dy / (1/math.tan(a + Ene2Ang(E2)) - 1/math.tan(a + Ene2Ang(E1)))
+
+    P = getP(a, dy)
     X = getX()
     Y = getY()
-    print(X, Y)
+    #print(X, Y, P)
 
     EnergyMatrix = np.zeros((main.dim, main.dim))
     for x_ in range(main.dim):
@@ -44,29 +49,40 @@ def getEnergyMatrix(P, a, ylo, yup):
             x = x_ - X
             y = y_ - Y
             EnergyMatrix[x_][y_] = sinAng2Ene((y*math.sin(a) + P*math.cos(a))/(x**2 + y**2 + P**2)**0.5)
-            if E1-0.5 < EnergyMatrix[x_][y_] < E1+0.5:
-                EnergyMatrix[x_][y_] += 20
-            elif E2-0.5 < EnergyMatrix[x_][y_] < E2+0.5:
-                EnergyMatrix[x_][y_] += 20
+            #if E1-0.5 < EnergyMatrix[x_][y_] < E1+0.5:
+            #    EnergyMatrix[x_][y_] += 20
+            #elif E2-0.5 < EnergyMatrix[x_][y_] < E2+0.5:
+            #    EnergyMatrix[x_][y_] += 20
 
+    main.plot2D(EnergyMatrix, title='Energy Matrix')
     return EnergyMatrix
 
-#Emat = getEnergyMatrix(8.9/(13.5*10**-4), 0.8685, ylo, yup)
-with open('pickleEmat.pk', 'rb') as fi:
-    Emat = pickle.load(fi)
+## alpha, lower line, upper line, mean line separation
+#Emat = getEnergyMatrix(alpha, ylo, yup, dy)
 
-main.plot2D(Emat)
+#with open('pickleEmat.pk', 'rb') as fi:
+#    Emat = pickle.load(fi)
+#with open('pickleEmat3.pk', 'wb') as fi:
+#    pickle.dump(Emat, fi)
 
-for i in range( main.dim ):
-    Emat[i][round(ylo[i])] += 50
-    Emat[i][round(yup[i])] += 50
+import matplotlib.pyplot as plt
 
-main.plot2D(Emat)
+#main.plot2D(Emat)
+
+#for i in range( main.dim ):
+#    Emat[i][round(ylo[i])] += 200
+#    Emat[i][round(yup[i])] += 200
+
+#plt.imshow(Emat)
+#plt.title('Energy Matrix')
+#plt.xlabel('y_ (pixels)')
+#plt.ylabel('x_ (pixels)')
+#plt.show()
 
 ## Input list of positions (indexes)
 ## Output list energies at the given positions
 def getEnergyList(pos):
-    Emat = getEnergyMatrix(8.9/(13.5*10**-4), 0.8685, ylo, yup)
+    Emat = getEnergyMatrix(alpha, ylo, yup, dy)
     energies = []
     for i in range(len(pos)):
         energies.append(Emat[pos[i][0]][pos[i][1]])
